@@ -2,13 +2,13 @@
 module.exports = {
   content: [
     './src/pages/**/*.{html,js,tsx}',
-    './components/**/*.{html,js}',
+    './components/**/*.{html,js}'
   ],
   theme: {
-    extend: {},
+    extend: {}
   },
   plugins: [
     'tailwindcss',
     'postcss-preset-env'
-  ],
+  ]
 }
