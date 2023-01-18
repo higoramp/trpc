@@ -4,11 +4,11 @@
 export interface MessageType {
   id?: string;
   body: string;
-  createdAt: Date;
+  createdAt: string | null;
 }
 
 export default function Message(props: MessageType & { onDelete?: Function }) {
-  const formatDate = (date: Date) => {
+  const formatDate = (date: string) => {
     console.log('DATE', date)
 
     if(date) {

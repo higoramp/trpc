@@ -8,10 +8,12 @@ export default function MessageList({
   data,
   onSendMessage,
   onDelete,
+  onFileAttachment
 }: {
   data: MessageType[];
   onSendMessage: Function;
   onDelete: Function;
+  onFileAttachment: Function;
 }) {
   // 💡 Tip: CMD+Click (or CTRL+Click) on `greeting` to go to the server definition
   const messagesEndRef = useRef<HTMLHeadingElement>(null);
@@ -44,7 +46,7 @@ export default function MessageList({
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <Input onSend={onSendMessage}></Input>
+        <Input onSend={onSendMessage} onFileAttachment={onFileAttachment}></Input>
       </div>
     </div>
   );

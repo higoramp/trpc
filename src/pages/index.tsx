@@ -1,7 +1,7 @@
 /**
  * This is a Next.js page.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { trpc } from '../utils/trpc';
 import MessageList from './components/messagelist';
 
@@ -10,6 +10,7 @@ export default function IndexPage() {
   const result = trpc.list.useQuery();
   const utils = trpc.useContext();
   const [tempFile, setTempFile] = useState(null)
+  const [message, setMessage] = useState(null)
   const add = trpc.add.useMutation({
     onMutate: async message => {
         // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
@@ -19,8 +20,10 @@ export default function IndexPage() {
         const fakeMessage = {
           id: 'tempImage',
           body: message.body,
-          image: tempFile
+          image: tempFile,
+          createdAt: new Date().toString()
         }
+        console.log('TEMP FILE', tempFile)
         // Optimistically update to the new value
         utils.list.setData(undefined, (old) => old ? [...old, fakeMessage] : undefined)
 
@@ -66,6 +69,7 @@ export default function IndexPage() {
   })
   
   const uploadImage = async (signedUrl: string, file: any) => {
+    console.log('UPLOAD FILE', tempFile)
     try {
       const myHeaders = new Headers({ 'Content-Type': 'image/*' });
     const response = await fetch(signedUrl, {
@@ -73,20 +77,24 @@ export default function IndexPage() {
         headers: myHeaders,
         body: file
      });
-
+     setTempFile(null)
      console.log('RESPONSE', response)
     } catch (error) {
       console.log(error)
     }
   }
-  const sendMessage = (message: {body: string, image?: {url: string, file: any}}) => {
-    let hasImage = false
-    if(message.image) {
-      setTempFile(message.image.file)
-      hasImage = true
-    }
-    add.mutate({body: message.body, hasImage})
+  const sendMessage = (message: {body: string}) => {
+    add.mutate({body: message.body, hasImage: tempFile != null})
   }
+
+  const attachFile = (file: any) => {
+      console.log('MESSAGE HAS FILE', file)
+      setTempFile(file)
+  }
+
+  useEffect(() => {
+    
+  }, [tempFile, message])
 
   const deleteMessage = (id: string) => {
     console.log('ID', id)
@@ -101,7 +109,7 @@ export default function IndexPage() {
     );
   }
   return (
-  <MessageList data ={result.data} onSendMessage={sendMessage} onDelete={deleteMessage}/>
+  <MessageList data ={result.data} onSendMessage={sendMessage} onDelete={deleteMessage} onFileAttachment={attachFile}/>
   
   );
 }

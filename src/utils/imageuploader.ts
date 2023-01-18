@@ -3,6 +3,10 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
   region: "sa-east-1",
+  credentials: {
+    accessKeyId: process.env.ACCESS_KEY || '',
+    secretAccessKey: process.env.SECRET_KEY || '',
+  },
 });
 
 export const getUploadImageUrl = async () => {

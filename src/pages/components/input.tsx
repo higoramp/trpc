@@ -2,10 +2,10 @@ import { ChangeEvent, useState } from "react";
 /**
  * This is a Next.js page.
  */
-export default function Input(props: { onSend: Function }) {
+export default function Input(props: { onSend: Function, onFileAttachment: Function }) {
   // 💡 Tip: CMD+Click (or CTRL+Click) on `greeting` to go to the server definition
   const [input, setInput] = useState("");
-  const [image, setImage] = useState<{ url: string; file: any } | undefined>();
+  const [image, setImage] = useState<string>();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -14,17 +14,18 @@ export default function Input(props: { onSend: Function }) {
   const sendInput = () => {
     console.log(input);
     if (props.onSend) {
-      props.onSend({ body: input, image });
+      props.onSend({ body: input });
     }
     setInput("");
+    setImage(undefined)
   };
 
   const selectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length === 1) {
-      setImage({
-        url: URL.createObjectURL(e.target.files[0]),
-        file: e.target.files[0],
-      });
+      setImage(URL.createObjectURL(e.target.files[0]));
+      if(props.onFileAttachment) {
+        props.onFileAttachment(e.target.files[0])
+      }
     }
     console.log(e.target.files);
   };
@@ -40,7 +41,7 @@ export default function Input(props: { onSend: Function }) {
         className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-6 bg-gray-200 rounded-md py-3"
       />
       <div className="absolute right-0 items-center inset-y-0 hidden sm:flex">
-        {image && <img src={image.url} style={{ width: 40, height: 40 }}></img>}
+        {image && <img src={image} style={{ width: 40, height: 40 }}></img>}
         <label className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
