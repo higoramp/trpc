@@ -10,7 +10,7 @@ export default function IndexPage() {
   const result = trpc.list.useQuery();
   const utils = trpc.useContext();
   const [tempFile, setTempFile] = useState(null)
-  const mutation = trpc.add.useMutation({
+  const add = trpc.add.useMutation({
     onMutate: async message => {
         // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
         await utils.list.cancel()
@@ -27,9 +27,6 @@ export default function IndexPage() {
         // Return a context object with the snapshotted value
         return { previousText }
     },
-    onError: (err, newTodo, context) => {
-      // queryClient.setQueryData(['todos'], context.previousTodos)
-    },
     onSuccess: (data) => {
 
       console.log('DATA RECEIVED', data)
@@ -39,6 +36,28 @@ export default function IndexPage() {
       }
       
      
+    },
+    // Always refetch after error or success:
+    onSettled: () => {
+      utils.list.invalidate()
+    },
+  })
+
+  const del = trpc.delete.useMutation({
+    onMutate: async id => {
+        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+        await utils.list.cancel()
+        // Snapshot the previous value
+        const previousText = utils.list.getData()
+
+        // Optimistically update to the new value
+        utils.list.setData(undefined, (old) => old ? old.filter(message => message.id != id) : undefined)
+
+        // Return a context object with the snapshotted value
+        return { previousText }
+    },
+    onSuccess: (data) => {
+      console.log('DATA RECEIVED', data)     
     },
     // Always refetch after error or success:
     onSettled: () => {
@@ -66,7 +85,12 @@ export default function IndexPage() {
       setTempFile(message.image.file)
       hasImage = true
     }
-    mutation.mutate({body: message.body, hasImage})
+    add.mutate({body: message.body, hasImage})
+  }
+
+  const deleteMessage = (id: string) => {
+    console.log('ID', id)
+    del.mutate(id)
   }
 
   if (!result.data) {
@@ -77,7 +101,7 @@ export default function IndexPage() {
     );
   }
   return (
-  <MessageList data ={result.data} onSendMessage={sendMessage}/>
+  <MessageList data ={result.data} onSendMessage={sendMessage} onDelete={deleteMessage}/>
   
   );
 }

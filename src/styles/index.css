@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.message > .remove {
+    display: none;
+}
+
+.message:hover > .remove {
+    display: block;
+}
