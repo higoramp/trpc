@@ -4,6 +4,7 @@
 export interface MessageType {
   id?: string;
   body: string;
+  image?: string | null;
   createdAt: string | null;
 }
 
@@ -16,11 +17,14 @@ export default function Message(props: MessageType & { onDelete?: Function }) {
 
     }
   }
+  console.log('IMAGE NA MESSAGE', props.image)
 
   return (
     <div className="message flex w-full mt-2 space-x-3 max-w-xs ml-auto justify-end">
       <div>
-        <div className="bg-blue-600 text-white p-3 rounded-l-lg rounded-br-lg">
+      {props.image && <img className="bg-blue-600 rounded-t-lg p-1.5" src={props.image}/>}
+        <div className={`bg-blue-600 text-white p-3 rounded-bl-lg ${props.image ? '': 'rounded-tl-lg'} rounded-br-lg`}>
+        
           <p className="text-sm">{props.body}</p>
         </div>
         {props.createdAt && <span className="text-xs text-gray-500 leading-none">{formatDate(props.createdAt)}</span>}

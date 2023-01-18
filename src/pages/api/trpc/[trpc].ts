@@ -6,7 +6,7 @@ import * as trpcNext from "@trpc/server/adapters/next";
 import { z } from "zod";
 import { publicProcedure, router } from "~/server/trpc";
 import { prisma } from "~/utils/prisma";
-import { getUploadImageUrl } from "~/utils/imageuploader";
+import { getUploadImageUrl, deleteImage } from "~/utils/imageuploader";
 
 const appRouter = router({
   add: publicProcedure
@@ -35,6 +35,16 @@ const appRouter = router({
       return input.hasImage ? signedUrlImage : "ok";
     }),
   delete: publicProcedure.input(z.string()).mutation(async ({ input }) => {
+    const message = await prisma.message.findFirst({
+      where: {
+        id: input
+      }
+    })
+
+    if(message?.image) {
+      deleteImage(message.image)
+    }
+    
     await prisma.message.delete({
       where: {
         id: input,

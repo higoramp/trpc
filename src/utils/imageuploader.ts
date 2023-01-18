@@ -1,4 +1,4 @@
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
@@ -20,6 +20,18 @@ export const getUploadImageUrl = async () => {
   const signedUrl = await getSignedUrl(s3, command, {
     expiresIn: 3600,
   });
-  const url = bucketParams.Key;
-  return { signedUrl, url };
+  // Probably, not the best way to get the url...
+  return { signedUrl, url: signedUrl.split('?')[0] };
+};
+
+export const deleteImage = async (imageUrl: string) => {
+  const bucketParams = {
+    Bucket: process.env.BUCKET_NAME,
+    Key: imageUrl.split('/').pop(),
+  };
+  const command = new DeleteObjectCommand(bucketParams);
+  // Create the presigned URL.
+  await s3.send(command);
+  console.log('delete obj', imageUrl)
+  // Probably, not the best way to get the url...
 };
