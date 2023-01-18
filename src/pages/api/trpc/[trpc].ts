@@ -5,22 +5,50 @@
 import * as trpcNext from '@trpc/server/adapters/next';
 import { z } from 'zod';
 import { publicProcedure, router } from '~/server/trpc';
+import { prisma } from '~/utils/prisma';
+
 
 const appRouter = router({
-  greeting: publicProcedure
-    // This is the input schema of your procedure
-    // 💡 Tip: Try changing this and see type errors on the client straight away
+  add: publicProcedure
     .input(
       z.object({
-        name: z.string().nullish(),
+        body: z.string().min(1),
+        hasImage: z.boolean().optional()
       }),
     )
-    .query(({ input }) => {
+    .mutation(async ({input}) => {
+      await prisma.message.create({
+        data: {
+          body: input.body,
+        }
+      })
+ 
+      return 'ok';
+    }),
+    delete: publicProcedure
+    .input(
+      z.string()
+    )
+    .mutation(async ({input}) => {
+
+      await prisma.message.delete({
+        where: {
+          id: input
+        }
+      })
+ 
+      return {ok: 'true'};
+    }),
+  
+    // This is the input schema of your procedure
+    // 💡 Tip: Try changing this and see type errors on the client straight away
+
+  list: publicProcedure
+    // This is the input schema of your procedure
+    // 💡 Tip: Try changing this and see type errors on the client straight away
+    .query(() => {
       // This is what you're returning to your client
-      return {
-        text: `hello ${input?.name ?? 'world'}`,
-        // 💡 Tip: Try adding a new property here and see it propagate to the client straight-away
-      };
+      return prisma.message.findMany()
     }),
   // 💡 Tip: Try adding a new procedure here and see if you can use it in the client!
   // getUser: publicProcedure.query(() => {
