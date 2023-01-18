@@ -1,10 +1,20 @@
+import { useEffect, useRef } from "react";
 import Input from "./input";
-import Message from "./message";
+import Message, { MessageType } from "./message";
 /**
  * This is a Next.js page.
  */
-export default function MessageList({data, onSendMessage}) {
+export default function MessageList({data, onSendMessage}: {data: MessageType[], onSendMessage: Function}) {
   // 💡 Tip: CMD+Click (or CTRL+Click) on `greeting` to go to the server definition
+  const messagesEndRef = useRef<HTMLHeadingElement>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [data]);
 
   if (!data) {
     return (
@@ -18,7 +28,8 @@ export default function MessageList({data, onSendMessage}) {
       <div className="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden">
         <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
 
-          {data.map(message => <Message key={message.id} {...message}></Message>)}
+          {data.map((message, index) => <Message key={message.id || `tempImage-${index}`} {...message}></Message>)}
+          <div ref={messagesEndRef} />
         </div>
         <Input onSend = {onSendMessage}></Input>
       </div>

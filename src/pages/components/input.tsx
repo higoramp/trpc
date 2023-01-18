@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from "react";
 /**
  * This is a Next.js page.
  */
-export default function Input(props) {
+export default function Input(props: { onSend: Function }) {
   // 💡 Tip: CMD+Click (or CTRL+Click) on `greeting` to go to the server definition
   const [input, setInput] = useState("");
   const [image, setImage] = useState<{ url: string; file: any } | undefined>();
@@ -19,7 +19,7 @@ export default function Input(props) {
     setInput("");
   };
 
-  const selectFile = (e) => {
+  const selectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length === 1) {
       setImage({
         url: URL.createObjectURL(e.target.files[0]),
