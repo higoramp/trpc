@@ -32,6 +32,5 @@ export const deleteImage = async (imageUrl: string) => {
   const command = new DeleteObjectCommand(bucketParams);
   // Create the presigned URL.
   await s3.send(command);
-  console.log('delete obj', imageUrl)
   // Probably, not the best way to get the url...
 };

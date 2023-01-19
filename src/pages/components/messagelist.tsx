@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Input from "./input";
 import Message, { MessageType } from "./message";
 /**
@@ -11,9 +11,9 @@ export default function MessageList({
   onFileAttachment
 }: {
   data: MessageType[];
-  onSendMessage: Function;
-  onDelete: Function;
-  onFileAttachment: Function;
+  onSendMessage: (body: string) => void;
+  onDelete: (id: string) => void;
+  onFileAttachment: (file: File) => void;
 }) {
   // 💡 Tip: CMD+Click (or CTRL+Click) on `greeting` to go to the server definition
   const messagesEndRef = useRef<HTMLHeadingElement>(null);
