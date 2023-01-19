@@ -1,8 +1,8 @@
-import { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 /**
  * This is a Next.js page.
  */
-export default function Input(props: { onSend: Function, onFileAttachment: Function }) {
+export default function Input(props: { onSend: (body: string) => void, onFileAttachment: (file: File) => void }) {
   // 💡 Tip: CMD+Click (or CTRL+Click) on `greeting` to go to the server definition
   const [input, setInput] = useState("");
   const [image, setImage] = useState<string>();
@@ -12,9 +12,8 @@ export default function Input(props: { onSend: Function, onFileAttachment: Funct
   ) => setInput(e.target.value);
 
   const sendInput = () => {
-    console.log(input);
     if (props.onSend && input.length > 0) {
-      props.onSend({ body: input });
+      props.onSend(input);
     }
     setInput("");
     setImage(undefined)
@@ -27,7 +26,6 @@ export default function Input(props: { onSend: Function, onFileAttachment: Funct
         props.onFileAttachment(e.target.files[0])
       }
     }
-    console.log(e.target.files);
   };
 
   return (
@@ -43,26 +41,7 @@ export default function Input(props: { onSend: Function, onFileAttachment: Funct
       <div className="absolute right-0 items-center inset-y-0 hidden sm:flex">
         {image && <img src={image} style={{ width: 40, height: 40 }}></img>}
         <label className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="h-6 w-6 text-gray-600"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-            ></path>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-            ></path>
-          </svg>
+        <img className="h-6 w-6 text-gray-600" src='/assets/image.svg'/>
           <input
             type="file"
             onChange={selectFile}
@@ -78,14 +57,7 @@ export default function Input(props: { onSend: Function, onFileAttachment: Funct
           className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none"
         >
           <span className="font-bold">Send</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="h-6 w-6 ml-2 transform rotate-90"
-          >
-            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-          </svg>
+          <img className="h-6 w-6 ml-2 transform rotate-90" src='/assets/send.svg'/>
         </button>
       </div>
     </div>
