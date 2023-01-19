@@ -7,6 +7,7 @@ import { z } from "zod";
 import { publicProcedure, router } from "~/server/trpc";
 import { prisma } from "~/utils/prisma";
 import { getUploadImageUrl, deleteImage } from "~/utils/imageuploader";
+import { Message } from "@prisma/client";
 
 const appRouter = router({
   add: publicProcedure
@@ -17,22 +18,17 @@ const appRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      let image;
-      let signedUrlImage;
-      if (input.hasImage) {
+      const data = <Message> { body: input.body }
+
+      if (!input.hasImage) {
+        await prisma.message.create({data});
+        return "ok"
+      } else {
         const { url, signedUrl } = await getUploadImageUrl();
-        image = url;
-        signedUrlImage = signedUrl;
+        data.image = url
+        await prisma.message.create({data});
+        return signedUrl
       }
-
-      await prisma.message.create({
-        data: {
-          body: input.body,
-          image,
-        },
-      });
-
-      return input.hasImage ? signedUrlImage : "ok";
     }),
   delete: publicProcedure.input(z.string()).mutation(async ({ input }) => {
     const message = await prisma.message.findFirst({
@@ -44,7 +40,7 @@ const appRouter = router({
     if(message?.image) {
       deleteImage(message.image)
     }
-    
+
     await prisma.message.delete({
       where: {
         id: input,
