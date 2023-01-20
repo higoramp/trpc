@@ -2,7 +2,7 @@ import React, { ChangeEvent, useState } from "react";
 /**
  * This is a Next.js page.
  */
-export default function Input(props: { onSend: (body: string) => void, onFileAttachment: (file: File) => void }) {
+export default function Input(props: { disabled?: boolean, onSend: (body: string) => void, onFileAttachment: (file: File) => void }) {
   // 💡 Tip: CMD+Click (or CTRL+Click) on `greeting` to go to the server definition
   const [input, setInput] = useState("");
   const [image, setImage] = useState<string>();
@@ -32,6 +32,7 @@ export default function Input(props: { onSend: (body: string) => void, onFileAtt
     <div className="relative flex">
       <input
         type="text"
+        disabled={props.disabled}
         onChange={handleChange}
         onKeyPress={(e) => (e.key === "Enter" ? sendInput() : undefined)}
         value={input}
@@ -51,7 +52,7 @@ export default function Input(props: { onSend: (body: string) => void, onFileAtt
         </label>
 
         <button
-          disabled={input.length === 0}
+          disabled={props.disabled || input.length === 0}
           type="button"
           onClick={sendInput}
           className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none"

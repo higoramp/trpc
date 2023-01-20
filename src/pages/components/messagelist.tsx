@@ -1,16 +1,22 @@
 import React, { useEffect, useRef } from "react";
+import Error from "./error";
 import Input from "./input";
+import Loading from "./loading";
 import Message, { MessageType } from "./message";
 /**
  * This is a Next.js page.
  */
 export default function MessageList({
   data,
+  isLoading,
+  isError,
   onSendMessage,
   onDelete,
   onFileAttachment
 }: {
   data: MessageType[];
+  isLoading: boolean;
+  isError: boolean;
   onSendMessage: (body: string) => void;
   onDelete: (id: string) => void;
   onFileAttachment: (file: File) => void;
@@ -25,19 +31,14 @@ export default function MessageList({
   useEffect(() => {
     scrollToBottom();
   }, [data]);
-
-  if (!data) {
-    return (
-      <div style={styles}>
-        <h1>Loading...</h1>
-      </div>
-    );
-  }
+  
   return (
-    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-gray-100 text-gray-800 p-10">
+    <div className="flex flex-col dark:bg-gray-800 items-center justify-center w-screen min-h-screen bg-gray-100 text-gray-800 p-10">
+      {isError && <Error/>}
+      {isLoading && <Loading/>}
       <div className="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden">
         <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
-          {data.map((message, index) => (
+          {data && data.map((message, index) => (
             <Message
               key={message.id || `tempImage-${index}`}
               {...message}
@@ -46,16 +47,8 @@ export default function MessageList({
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <Input onSend={onSendMessage} onFileAttachment={onFileAttachment}></Input>
+        <Input disabled={isLoading || isError} onSend={onSendMessage} onFileAttachment={onFileAttachment}></Input>
       </div>
     </div>
   );
 }
-
-const styles = {
-  width: "100vw",
-  height: "100vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};

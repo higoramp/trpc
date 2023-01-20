@@ -7,7 +7,7 @@ import MessageList from "./components/messagelist";
 
 export default function IndexPage() {
   // 💡 Tip: CMD+Click (or CTRL+Click) on `greeting` to go to the server definition
-  const result = trpc.list.useQuery();
+  const { data, isLoading, isError } = trpc.list.useQuery();
   const utils = trpc.useContext();
   const [tempFile, setTempFile] = useState<File | null>();
 
@@ -85,16 +85,11 @@ export default function IndexPage() {
     del.mutate(id);
   };
 
-  if (!result.data) {
-    return (
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
-  }
   return (
     <MessageList
-      data={result.data}
+      data={data || []}
+      isError={isError}
+      isLoading={isLoading}
       onSendMessage={sendMessage}
       onDelete={deleteMessage}
       onFileAttachment={attachFile}
